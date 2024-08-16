@@ -1,0 +1,95 @@
+.container {
+	display: flex;
+	&--row {
+		flex-flow: row nowrap;
+
+		&Sm {
+			flex-flow: column nowrap;
+			@media screen and (min-width: $media-sm) {
+				flex-flow: row nowrap;
+			}
+		}
+		
+		&Md {
+			flex-flow: column nowrap;
+			@media screen and (min-width: $media-md) {
+				flex-flow: row nowrap;
+			}
+		}
+		
+		&Lg {
+			flex-flow: column nowrap;
+			@media screen and (min-width: $media-lg) {
+				flex-flow: row nowrap;
+			}
+		}
+		
+		&Xl {
+			flex-flow: column nowrap;
+			@media screen and (min-width: $media-xl) {
+				flex-flow: row nowrap;
+			}
+		}
+	}
+	&--column {
+		flex-flow: column nowrap;
+
+		&Sm {
+			flex-flow: row nowrap;
+			@media screen and (min-width: $media-sm) {
+				flex-flow: column nowrap;
+			}
+		}
+		
+		&Md {
+			flex-flow: row nowrap;
+			@media screen and (min-width: $media-md) {
+				flex-flow: column nowrap;
+			}
+		}
+		
+		&Lg {
+			flex-flow: row nowrap;
+			@media screen and (min-width: $media-lg) {
+				flex-flow: column nowrap;
+			}
+		}
+		
+		&Xl {
+			flex-flow: row nowrap;
+			@media screen and (min-width: $media-xl) {
+				flex-flow: column nowrap;
+			}
+		}
+	}
+	&--alignCenter {
+		align-items: center;
+	}
+	&--alignStart {
+		align-items: flex-start;
+	}
+	&--alignEnd {
+		align-items: flex-end;
+	}
+	&--alignBaseline {
+		align-items: baseline;
+	}
+	&--justifyCenter {
+		justify-content: center;
+	}
+	&--justifyStart {
+		justify-content: flex-start;
+	}
+	&--justifyEnd {
+		justify-content: flex-end;
+	}
+	&--justifyBetween {
+		justify-content: space-between;
+	}
+	&--justifyAround {
+		justify-content: space-around;
+	}
+	&--justifyEvenly {
+		justify-content: space-evenly;
+	}
+}
