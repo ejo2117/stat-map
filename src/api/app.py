@@ -24,5 +24,16 @@ def invalid_api_usage(e):
 	return jsonify(e.to_dict()), e.status_code
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def index():
+    return "Index"
+
+
+
+@app.route("/api/info")
+def countryInfo():
+    country_name = request.args.get('country_name')
+    if not country_name:
+        raise InvalidAPIUsage("No country name provided!")
+
+    return f"Received {escape(country_name)}"
+        
