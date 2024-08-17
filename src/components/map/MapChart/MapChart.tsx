@@ -18,14 +18,15 @@ type Geo = {
 const MapChart = () => {
 
 	const handleClick = (countryName: string) => {
-		const data = fetch(`/api/info?country_name=${countryName}`)
+		const encodedCountryName = countryName.replace(' ', '_')
+		const data = fetch(`/api/info?country_name=${encodedCountryName}`)
 			.then(response => {
-				const text = response.text()
-					.then(textResponse => textResponse)
-					.catch(textErr => {
-						console.error(`Error parsing text: ${textErr}`)
+				const json = response.json()
+					.then(jsonResponse => jsonResponse)
+					.catch(jsonErr => {
+						console.error(`Error parsing json: ${jsonErr}`)
 					})
-				return text
+				return json
 			})
 			.catch(err => {
 				console.error(`Error fetching from API: ${err}`);
@@ -39,11 +40,6 @@ const MapChart = () => {
 			<Geographies geography='./features.json'>
 				{({ geographies }) => 
 					(geographies as Geo[]).map((geo, i) => {
-
-						if (i === 0) {
-							// console.log({ geo })
-						}
-
 						return (
 							<Geography key={geo.rsmKey} geography={geo} onClick={() => handleClick(geo.properties.name)} />
 						);

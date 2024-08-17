@@ -1,5 +1,7 @@
+import requests
 from flask import Flask, jsonify, request
 from markupsafe import escape
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -28,14 +30,34 @@ def index():
     return "Index"
 
 
+def create_finder(soup_instance):
+	def find_data_for_header(keyword):
+		def find_header_with_keyword(tag):
+			# here we have access to both the keyword and the soup instance
+			return tag.name == 'th' and tag.string == keyword
+		
+		header = soup_instance.find(find_header_with_keyword)
+		tag_with_data = header.parent.next_sibling.find('td', class_='infobox-data')
+		string_content_as_list = list(tag_with_data.stripped_strings)
+		
+		return string_content_as_list[0]
+	
+	return find_data_for_header
 
 @app.route("/api/info")
 def countryInfo():
-	country_name = request.args.get('country_name')
+	country_name = escape(request.args.get('country_name'))
 	if not country_name:
 		raise InvalidAPIUsage("No country name provided!")
 	
-	print(f"Received: {escape(country_name)}")
+	info = {}
 
-	return f"{escape(country_name)}"
+	page = requests.get(f"https://en.wikipedia.org/wiki/{country_name}").text
+	soup = BeautifulSoup(page, 'html.parser')
+
+	find_data_for_header = create_finder(soup)
+
+	info['population'] = find_data_for_header('Population')
+
+	return info
         
