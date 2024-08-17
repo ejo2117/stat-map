@@ -17,13 +17,24 @@ type Geo = {
 
 const MapChart = () => {
 
+	const handleClick = (countryName: string) => {
+		window.alert(`clicked ${countryName}`)
+	}
+
 	return (
 		<ComposableMap>
 			<Geographies geography='./features.json'>
 				{({ geographies }) => 
-					geographies.map((geo) => (
-						<Geography key={geo.rsmKey} geography={geo} />
-					))
+					(geographies as Geo[]).map((geo, i) => {
+
+						if (i === 0) {
+							// console.log({ geo })
+						}
+
+						return (
+							<Geography key={geo.rsmKey} geography={geo} onClick={() => handleClick(geo.properties.name)} />
+						);
+					})
 				}
 			</Geographies>
 		</ComposableMap>
