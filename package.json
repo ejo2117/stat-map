@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "flask-dev": "flask --app src/api/app run",
+    "next-dev": "next dev",
+    "dev": "concurrently \"yarn run next-dev\" \"yarn run flask-dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +14,7 @@
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
     "classnames": "^2.5.1",
+    "concurrently": "^8.2.2",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",

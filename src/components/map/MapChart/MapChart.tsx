@@ -18,7 +18,20 @@ type Geo = {
 const MapChart = () => {
 
 	const handleClick = (countryName: string) => {
-		window.alert(`clicked ${countryName}`)
+		const data = fetch(`/api/info?country_name=${countryName}`)
+			.then(response => {
+				const text = response.text()
+					.then(textResponse => textResponse)
+					.catch(textErr => {
+						console.error(`Error parsing text: ${textErr}`)
+					})
+				return text
+			})
+			.catch(err => {
+				console.error(`Error fetching from API: ${err}`);
+			})
+		// eslint-disable-next-line no-console
+		console.log({ data })
 	}
 
 	return (
