@@ -31,9 +31,11 @@ def index():
 
 @app.route("/api/info")
 def countryInfo():
-    country_name = request.args.get('country_name')
-    if not country_name:
-        raise InvalidAPIUsage("No country name provided!")
+	country_name = request.args.get('country_name')
+	if not country_name:
+		raise InvalidAPIUsage("No country name provided!")
+	
+	print(f"Received: {escape(country_name)}")
 
-    return f"Received {escape(country_name)}"
+	return f"{escape(country_name)}"
         
