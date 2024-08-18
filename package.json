@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "flask-dev": "flask --app src/api/app run",
+    "flask-dev": "flask --app src/api/app run --debug",
     "next-dev": "next dev",
     "dev": "concurrently \"yarn run next-dev\" \"yarn run flask-dev\"",
     "build": "next build",
