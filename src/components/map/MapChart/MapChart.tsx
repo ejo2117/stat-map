@@ -1,5 +1,7 @@
-import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
-
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
+import styles from './MapChart.module.scss';
 
 type Geo = {
 	geometry: {
@@ -15,38 +17,53 @@ type Geo = {
 	type: string;
 }
 
+
+const getCountryInfo = async (countryName: string) => {
+	if (!countryName) {
+		return null	
+	}
+	const encodedCountryName = countryName.replace(' ', '_')	
+	const res = await fetch(`/api/info?country_name=${encodedCountryName}`)
+	const data = await res.json()
+	return data
+}
+
 const MapChart = () => {
 
-	const handleClick = (countryName: string) => {
-		const encodedCountryName = countryName.replace(' ', '_')
-		const data = fetch(`/api/info?country_name=${encodedCountryName}`)
-			.then(response => {
-				const json = response.json()
-					.then(jsonResponse => jsonResponse)
-					.catch(jsonErr => {
-						console.error(`Error parsing json: ${jsonErr}`)
-					})
-				return json
-			})
-			.catch(err => {
-				console.error(`Error fetching from API: ${err}`);
-			})
-		// eslint-disable-next-line no-console
-		console.log({ data })
-	}
+	const [countryName, setCountryName] = useState(null)
+
+	const { data } = useQuery({
+		queryKey: ['data', countryName],
+		queryFn: async () => getCountryInfo(countryName),
+		
+	})
 
 	return (
-		<ComposableMap>
-			<Geographies geography='./features.json'>
-				{({ geographies }) => 
-					(geographies as Geo[]).map((geo, i) => {
-						return (
-							<Geography key={geo.rsmKey} geography={geo} onClick={() => handleClick(geo.properties.name)} />
-						);
-					})
-				}
-			</Geographies>
-		</ComposableMap>
+		<>
+			<pre className={styles.infoBox}>{JSON.stringify(data, null, 2)}</pre>
+			<ComposableMap>
+				<ZoomableGroup>
+					<Geographies geography='./features.json'>
+						{({ geographies }) => 
+							(geographies as Geo[]).map((geo, i) => {
+								return (
+									<Geography 
+										key={geo.rsmKey} 
+										geography={geo} 
+										onClick={() => setCountryName(geo.properties.name)} 
+										style={{
+											hover: {
+												'fill': 'blue',
+											},
+										}}
+									/>
+								);
+							})
+						}
+					</Geographies>
+				</ZoomableGroup>
+			</ComposableMap>
+		</>
 	)
 };
 
