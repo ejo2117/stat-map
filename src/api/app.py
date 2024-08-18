@@ -30,16 +30,44 @@ def index():
     return "Index"
 
 
+# TODO: probably easier to read as a Class
+def create_complex_finder(soup_instance):
+	def scrape_merged_table(keyword):
+		def find_top_row(tag):
+			return tag.name == 'th' and tag.contents[0].string == keyword
+
+		merged_table = {}
+		top_row = soup_instance.find(find_top_row).parent
+		row = top_row.next_sibling
+
+		good_classes = ['mergedrow', 'mergedbottomrow']
+		row_classes = row['class']
+
+		while(not set(good_classes).isdisjoint(set(row_classes))):
+			label = row.th.string
+			data = list(row.td.stripped_strings)[0]
+			merged_table[label] = data
+			row = row.next_sibling
+			row_classes = row['class']
+
+		return merged_table
+
+
+	return scrape_merged_table
+
+
+# TODO: consider deprecating
 def create_finder(soup_instance):
 	def find_data_for_header(keyword):
 		def find_header_with_keyword(tag):
-			# here we have access to both the keyword and the soup instance
-			return tag.name == 'th' and tag.string == keyword
+			return tag.name == 'th' and any(s == keyword for s in tag.strings)
 		
 		header = soup_instance.find(find_header_with_keyword)
+		tag_with_data = header.parent.next_sibling.find('th', class_='infobox-label')
 		tag_with_data = header.parent.next_sibling.find('td', class_='infobox-data')
 		string_content_as_list = list(tag_with_data.stripped_strings)
-		
+
+		# ignore the citation number adjacent to the value we want	
 		return string_content_as_list[0]
 	
 	return find_data_for_header
@@ -50,14 +78,17 @@ def countryInfo():
 	if not country_name:
 		raise InvalidAPIUsage("No country name provided!")
 	
-	info = {}
+	info = {
+		'name': country_name
+	}
 
 	page = requests.get(f"https://en.wikipedia.org/wiki/{country_name}").text
 	soup = BeautifulSoup(page, 'html.parser')
 
-	find_data_for_header = create_finder(soup)
+	find_data_for_header = create_complex_finder(soup)
 
 	info['population'] = find_data_for_header('Population')
+	info['gdp'] = find_data_for_header('GDP')
 
 	return info
         
