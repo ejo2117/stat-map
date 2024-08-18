@@ -44,7 +44,7 @@ def create_complex_finder(soup_instance):
 		row_classes = row['class']
 
 		while(not set(good_classes).isdisjoint(set(row_classes))):
-			label = row.th.string
+			label = ' '.join(list(row.th.stripped_strings))
 			data = list(row.td.stripped_strings)[0]
 			merged_table[label] = data
 			row = row.next_sibling
