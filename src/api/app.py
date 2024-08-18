@@ -60,13 +60,8 @@ def create_finder(soup_instance):
 	return scrape_merged_table
 
 
-@app.route("/api/info")
-def countryInfo():
-	country_name = escape(request.args.get('country_name'))
-	if not country_name:
-		raise InvalidAPIUsage("No country name provided!")
-	
-	info = {
+def get_wiki_data(country_name):
+	data = {
 		'name': country_name
 	}
 
@@ -75,9 +70,19 @@ def countryInfo():
 
 	find_data_for_header = create_finder(soup)
 
-	info['population'] = find_data_for_header('Population')
-	info['gdp'] = find_data_for_header('GDP')
-	info['hdi'] = find_data_for_header('HDI')
+	data['population'] = find_data_for_header('Population')
+	data['gdp'] = find_data_for_header('GDP')
+	data['hdi'] = find_data_for_header('HDI')
 
+	return data
+
+
+@app.route("/api/info")
+def country_info():
+	country_name = escape(request.args.get('country_name'))
+	if not country_name:
+		raise InvalidAPIUsage("No country name provided!")
+	
+	info = get_wiki_data(country_name)
 	return info
         
