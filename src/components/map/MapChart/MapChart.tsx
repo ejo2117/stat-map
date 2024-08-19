@@ -57,7 +57,8 @@ const MapChart = () => {
 									<Geography 
 										key={geo.rsmKey} 
 										geography={geo} 
-										onClick={() => setCountryName(geo.properties.name)} 
+										onClick={() => setCountryName(geo.properties.name)}
+										className={styles['country']} 
 										style={{
 											hover: {
 												'fill': 'blue',
