@@ -8,3 +8,10 @@
 	border: 1px solid $gray-4;
 	padding: 0.8rem;
 }
+
+.country {
+	&:focus {
+		outline: none;
+		fill: blue;
+	}
+}

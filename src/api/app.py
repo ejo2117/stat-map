@@ -34,9 +34,17 @@ def index():
 def create_finder(soup_instance):
 	def scrape_merged_table(keyword):
 		def find_top_row(tag):
-			return tag.name == 'th' and tag.contents[0].string == keyword
+			try:
+				return tag.name == 'th' and tag.contents[0].string == keyword
+			except IndexError:
+				return None
 
 		info = {}
+		table_header = soup_instance.find(find_top_row)
+
+		if table_header is None:
+			return None
+
 		top_row = soup_instance.find(find_top_row).parent
 
 		if(top_row.has_attr('class') and 'mergedtoprow' in top_row['class']):
@@ -50,6 +58,8 @@ def create_finder(soup_instance):
 				data = list(row.td.stripped_strings)[0]
 				info[label] = data
 				row = row.next_sibling
+				if(not row.has_attr('class')):
+					break
 				row_classes = row['class']
 		else:
 			info = list(top_row.td.stripped_strings)[0]
@@ -60,13 +70,8 @@ def create_finder(soup_instance):
 	return scrape_merged_table
 
 
-@app.route("/api/info")
-def countryInfo():
-	country_name = escape(request.args.get('country_name'))
-	if not country_name:
-		raise InvalidAPIUsage("No country name provided!")
-	
-	info = {
+def get_wiki_data(country_name):
+	data = {
 		'name': country_name
 	}
 
@@ -75,9 +80,19 @@ def countryInfo():
 
 	find_data_for_header = create_finder(soup)
 
-	info['population'] = find_data_for_header('Population')
-	info['gdp'] = find_data_for_header('GDP')
-	info['hdi'] = find_data_for_header('HDI')
+	data['population'] = find_data_for_header('Population')
+	data['gdp'] = find_data_for_header('GDP')
+	data['hdi'] = find_data_for_header('HDI')
 
+	return data
+
+
+@app.route("/api/info")
+def country_info():
+	country_name = escape(request.args.get('country_name'))
+	if not country_name:
+		raise InvalidAPIUsage("No country name provided!")
+	
+	info = get_wiki_data(country_name)
 	return info
         
